@@ -1,5 +1,7 @@
 // import 'dart:io';
 
+import 'dart:io';
+
 import 'package:faker/faker.dart';
 import 'package:mockito/annotations.dart';
 // import 'package:flutter/material.dart';
@@ -24,13 +26,22 @@ abstract class MyHttpClient {
 
 @GenerateMocks([MyHttpClient])
 void main() {
+  RemoteAuthentication sut;
+  MockMyHttpClient httpClient;
+  String url;
+
+  setUp(() {
+    httpClient = MockMyHttpClient();
+    url = faker.internet.httpUrl();
+    sut = RemoteAuthentication(httpClient: httpClient, url: url);
+  });
   test('Should call Http Client with correct correct values', () async {
     // arranje
 
-    final httpClient = MockMyHttpClient();
-    final url = faker.internet.httpUrl();
+    // final httpClient = MockMyHttpClient();
+    // final url = faker.internet.httpUrl();
     const method = 'post';
-    final sut = RemoteAuthentication(httpClient: httpClient, url: url);
+    // final sut = RemoteAuthentication(httpClient: httpClient, url: url);
 
     // act
     await sut.auth();
