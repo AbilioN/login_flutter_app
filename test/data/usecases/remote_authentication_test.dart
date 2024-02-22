@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:faker/faker.dart';
+import 'package:main_app/domain/usecases/usecases.dart';
 import 'package:mockito/annotations.dart';
 // import 'package:flutter/material.dart';
 import 'package:mockito/mockito.dart';
@@ -15,13 +16,18 @@ class RemoteAuthentication {
   final String url;
 
   RemoteAuthentication({required this.httpClient, required this.url});
-  Future<void> auth() async {
-    await httpClient.request(url: url, method: 'post');
+  Future<void> auth(AuthenticationParams params) async {
+    final body = {'email': params.email, 'password': params.password};
+    await httpClient.request(url: url, method: 'post', body: body);
   }
 }
 
 abstract class MyHttpClient {
-  Future<void> request({required String url, required String method});
+  Future<void> request({
+    required String url,
+    required String method,
+    Map body,
+  });
 }
 
 @GenerateMocks([MyHttpClient])
@@ -30,23 +36,28 @@ void main() {
   MockMyHttpClient httpClient;
   String url;
 
-  setUp(() {
+  // setUp(() {
+  //   httpClient = MockMyHttpClient();
+  //   url = faker.internet.httpUrl();
+  //   sut = RemoteAuthentication(httpClient: httpClient, url: url);
+  // });
+  test('Should call Http Client with correct correct values', () async {
     httpClient = MockMyHttpClient();
     url = faker.internet.httpUrl();
     sut = RemoteAuthentication(httpClient: httpClient, url: url);
-  });
-  test('Should call Http Client with correct correct values', () async {
+
+    final params = AuthenticationParams(
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+    );
     // arranje
-
-    // final httpClient = MockMyHttpClient();
-    // final url = faker.internet.httpUrl();
     const method = 'post';
-    // final sut = RemoteAuthentication(httpClient: httpClient, url: url);
-
     // act
-    await sut.auth();
-
+    await sut.auth(params);
     // assert
-    verify(httpClient.request(url: url, method: method));
+    verify(httpClient.request(
+        url: url,
+        method: method,
+        body: {'email': params.email, 'password': params.password}));
   });
 }
