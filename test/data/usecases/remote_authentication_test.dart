@@ -15,24 +15,22 @@ import 'remote_authentication_test.mocks.dart';
 
 @GenerateMocks([MyHttpClient])
 void main() {
-  RemoteAuthentication sut;
-  MockMyHttpClient httpClient;
-  String url;
+  late RemoteAuthentication sut;
+  late MockMyHttpClient httpClient;
+  late String url;
+  late AuthenticationParams params;
 
-  // setUp(() {
-  //   httpClient = MockMyHttpClient();
-  //   url = faker.internet.httpUrl();
-  //   sut = RemoteAuthentication(httpClient: httpClient, url: url);
-  // });
-  test('Should call Http Client with correct correct values', () async {
+  setUp(() {
     httpClient = MockMyHttpClient();
     url = faker.internet.httpUrl();
     sut = RemoteAuthentication(httpClient: httpClient, url: url);
-
-    final params = AuthenticationParams(
+    params = AuthenticationParams(
       email: faker.internet.email(),
       password: faker.internet.password(),
     );
+  });
+
+  test('Should call Http Client with correct correct values', () async {
     const method = 'post';
     // act
     await sut.auth(params);
@@ -44,21 +42,24 @@ void main() {
   });
 
   test('Should throw UnexpectedError if MyHttpClient returns 400', () async {
-    httpClient = MockMyHttpClient();
-
     when(httpClient.request(
             url: anyNamed('url'),
             method: anyNamed('method'),
             body: anyNamed('body')))
         .thenThrow(HttpError.badRequest);
-    url = faker.internet.httpUrl();
-    sut = RemoteAuthentication(httpClient: httpClient, url: url);
+    // act
+    final future = sut.auth(params);
+    // assert
 
-    final params = AuthenticationParams(
-      email: faker.internet.email(),
-      password: faker.internet.password(),
-    );
-    const method = 'post';
+    expect(future, throwsA(DomainError.unexpected));
+  });
+
+  test('Should throw UnexpectedError if MyHttpClient returns 400', () async {
+    when(httpClient.request(
+            url: anyNamed('url'),
+            method: anyNamed('method'),
+            body: anyNamed('body')))
+        .thenThrow(HttpError.notFound);
     // act
     final future = sut.auth(params);
     // assert
