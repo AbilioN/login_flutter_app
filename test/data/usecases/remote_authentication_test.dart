@@ -1,4 +1,5 @@
 // import 'dart:io';
+import 'package:main_app/domain/entities/account_entity.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:faker/faker.dart';
@@ -32,7 +33,16 @@ void main() {
 
   test('Should call Http Client with correct correct values', () async {
     const method = 'post';
-    // act
+    final accessToken = faker.guid.guid();
+    final name = faker.person.name();
+    when(httpClient.request(
+            url: anyNamed('url'),
+            method: anyNamed('method'),
+            body: anyNamed('body')))
+        .thenAnswer((_) async => {
+              'accessToken': accessToken,
+              'name': name,
+            });
     await sut.auth(params);
     // assert
     verify(httpClient.request(
@@ -92,5 +102,25 @@ void main() {
     // assert
 
     expect(future, throwsA(DomainError.invalidCredentials));
+  });
+
+  test('Should return an Account if MyHttpClient returns 200', () async {
+    final accessToken = faker.guid.guid();
+    final name = faker.person.name();
+    when(httpClient.request(
+            url: anyNamed('url'),
+            method: anyNamed('method'),
+            body: anyNamed('body')))
+        .thenAnswer((_) async => {
+              'accessToken': accessToken,
+              'name': name,
+            });
+    // act
+    final account = sut.auth(params);
+    // assert
+
+    await expectLater(account, completion(isA<AccountEntity>()));
+    final accountObject = await account;
+    expect(accountObject.token, accessToken);
   });
 }
