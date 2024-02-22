@@ -1,3 +1,4 @@
+import 'package:main_app/data/models/models.dart';
 import 'package:main_app/domain/entities/entities.dart';
 
 import '../../domain/helpers/helpers.dart';
@@ -14,7 +15,7 @@ class RemoteAuthentication {
     try {
       final response =
           await httpClient.request(url: url, method: 'post', body: body);
-      return AccountEntity.fromJson(response);
+      return RemoteAccountModel.fromJson(response).toEntity();
     } on HttpError catch (error) {
       // throw DomainError.unexpected;
       throw error == HttpError.unauthorized
