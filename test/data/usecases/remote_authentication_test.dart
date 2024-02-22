@@ -2,11 +2,13 @@
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:faker/faker.dart';
+import 'package:mockito/annotations.dart';
 
 import 'package:main_app/data/http/http.dart';
 import 'package:main_app/data/usecases/usecases.dart';
+
+import 'package:main_app/domain/helpers/helpers.dart';
 import 'package:main_app/domain/usecases/usecases.dart';
-import 'package:mockito/annotations.dart';
 // import 'package:flutter/material.dart';
 
 import 'remote_authentication_test.mocks.dart';
@@ -31,7 +33,6 @@ void main() {
       email: faker.internet.email(),
       password: faker.internet.password(),
     );
-    // arranje
     const method = 'post';
     // act
     await sut.auth(params);
@@ -40,5 +41,28 @@ void main() {
         url: url,
         method: method,
         body: {'email': params.email, 'password': params.password}));
+  });
+
+  test('Should throw UnexpectedError if MyHttpClient returns 400', () async {
+    httpClient = MockMyHttpClient();
+
+    when(httpClient.request(
+            url: anyNamed('url'),
+            method: anyNamed('method'),
+            body: anyNamed('body')))
+        .thenThrow(HttpError.badRequest);
+    url = faker.internet.httpUrl();
+    sut = RemoteAuthentication(httpClient: httpClient, url: url);
+
+    final params = AuthenticationParams(
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+    );
+    const method = 'post';
+    // act
+    final future = sut.auth(params);
+    // assert
+
+    expect(future, throwsA(DomainError.unexpected));
   });
 }
