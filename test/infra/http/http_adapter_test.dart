@@ -29,12 +29,21 @@ class ClientSpy extends Mock implements http.Client {}
 
 @GenerateMocks([ClientSpy])
 void main() {
+  late HttpAdapter sut;
+  late ClientSpy client;
+  late String url;
+
+  setUp(() {
+    client = MockClientSpy();
+    sut = HttpAdapter(client);
+    url = faker.internet.httpUrl();
+  });
   group('post', () {
     test('Should call post with correct values ', () async {
-      final client = MockClientSpy();
-      final sut = HttpAdapter(client);
-      final url = faker.internet.httpUrl();
-      when(client.post(any, headers: anyNamed('headers')))
+      // final client = MockClientSpy();
+      // final sut = HttpAdapter(client);
+      // final url = faker.internet.httpUrl();
+      when(client.post(Uri.parse(url), headers: anyNamed('headers')))
           .thenAnswer((_) async => http.Response('...', 200));
 
       sut.request(url: url, method: 'post');
