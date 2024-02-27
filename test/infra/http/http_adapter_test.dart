@@ -24,10 +24,7 @@ class HttpAdapter {
       'accept': 'application/json',
     };
     final uri = Uri.parse(url);
-    // await client.post(uri, headers: headers, body: jsonEncode(body));
-    // await client.post(uri, headers: headers, body: body);
-
-    await client.post(uri, headers: headers);
+    await client.post(uri, headers: headers, body: jsonEncode(body));
   }
 }
 
@@ -38,12 +35,14 @@ void main() {
   late HttpAdapter sut;
   late ClientSpy client;
   late String url;
+  late Map testBody;
   // late Uri url;
 
   setUp(() {
     client = MockClientSpy();
     sut = HttpAdapter(client);
     url = faker.internet.httpUrl();
+    testBody = {'any_key': 'any_value'};
   });
   group('post', () {
     test('Should call post with correct values ', () async {
@@ -51,13 +50,13 @@ void main() {
       when(client.post(
         testUrl,
         headers: anyNamed('headers'),
-        // body: anyNamed('body'),
+        body: anyNamed('body'),
       )).thenAnswer((_) async => http.Response('...', 200));
 
       await sut.request(
         url: url,
         method: 'post',
-        // body: {'any_key': 'any_value'},
+        body: testBody,
       );
       verify(client.post(
         Uri.parse(url),
@@ -65,8 +64,8 @@ void main() {
           'content-type': 'application/json',
           'accept': 'application/json',
         },
-        // body: "{'any_key': 'any_value'}",
-      ));
+        body: jsonEncode(testBody),
+      )).called(1);
 
       // verify(client.post(testUrl)).called(matcher)
     });
