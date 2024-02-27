@@ -24,7 +24,8 @@ class HttpAdapter {
       'accept': 'application/json',
     };
     final uri = Uri.parse(url);
-    await client.post(uri, headers: headers, body: jsonEncode(body));
+    await client.post(uri,
+        headers: headers, body: body != null ? jsonEncode(body) : null);
   }
 }
 
@@ -65,6 +66,31 @@ void main() {
           'accept': 'application/json',
         },
         body: jsonEncode(testBody),
+      )).called(1);
+
+      // verify(client.post(testUrl)).called(matcher)
+    });
+
+    test('Should call post with correct values without body', () async {
+      final testUrl = Uri.parse(url);
+      when(client.post(
+        testUrl,
+        headers: anyNamed('headers'),
+        // body: anyNamed('body'),
+      )).thenAnswer((_) async => http.Response('...', 200));
+
+      await sut.request(
+        url: url,
+        method: 'post',
+        // body: testBody,
+      );
+      verify(client.post(
+        Uri.parse(url),
+        headers: {
+          'content-type': 'application/json',
+          'accept': 'application/json',
+        },
+        // body: jsonEncode(testBody),
       )).called(1);
 
       // verify(client.post(testUrl)).called(matcher)
