@@ -24,8 +24,8 @@ class HttpAdapter {
       'accept': 'application/json',
     };
     final uri = Uri.parse(url);
-    await client.post(uri,
-        headers: headers, body: body != null ? jsonEncode(body) : null);
+    final jsonBody = body != null ? jsonEncode(body) : null;
+    await client.post(uri, headers: headers, body: jsonBody);
   }
 }
 
