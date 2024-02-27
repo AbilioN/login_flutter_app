@@ -112,12 +112,7 @@ void main() {
 
     test('Should return empty object if post returns 200 with no data',
         () async {
-      final testUrl = Uri.parse(url);
-      when(client.post(
-        testUrl,
-        headers: anyNamed('headers'),
-        // body: anyNamed('body'),
-      )).thenAnswer((_) async => http.Response('', 200));
+      mockResponse(200, body: '');
 
       final response = await sut.request(
         url: url,
