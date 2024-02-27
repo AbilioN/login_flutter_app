@@ -49,14 +49,19 @@ void main() {
     testBody = {'any_key': 'any_value'};
   });
   group('post', () {
-    test('Should call post with correct values ', () async {
-      final testUrl = Uri.parse(url);
-      when(client.post(
-        testUrl,
-        headers: anyNamed('headers'),
-        body: anyNamed('body'),
-      )).thenAnswer((_) async => http.Response('{"any_key":"any_value"}', 200));
+    PostExpectation mockRequest() => when(client.post(Uri.parse(url),
+        headers: anyNamed('headers'), body: anyNamed('body')));
 
+    void mockResponse(int statusCode,
+        {String body = '{"any_key":"any_value"}'}) {
+      mockRequest().thenAnswer((_) async => http.Response(body, statusCode));
+    }
+
+    setUp(() {
+      mockResponse(200);
+    });
+
+    test('Should call post with correct values ', () async {
       await sut.request(
         url: url,
         method: 'post',
@@ -76,13 +81,6 @@ void main() {
     });
 
     test('Should call post with correct values without body', () async {
-      final testUrl = Uri.parse(url);
-      when(client.post(
-        testUrl,
-        headers: anyNamed('headers'),
-        // body: anyNamed('body'),
-      )).thenAnswer((_) async => http.Response('{"any_key":"any_value"}', 200));
-
       await sut.request(
         url: url,
         method: 'post',
@@ -101,13 +99,6 @@ void main() {
     });
 
     test('Should return data if post returns 200', () async {
-      final testUrl = Uri.parse(url);
-      when(client.post(
-        testUrl,
-        headers: anyNamed('headers'),
-        // body: anyNamed('body'),
-      )).thenAnswer((_) async => http.Response('{"any_key":"any_value"}', 200));
-
       final response = await sut.request(
         url: url,
         method: 'post',
