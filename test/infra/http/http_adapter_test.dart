@@ -23,7 +23,6 @@ void main() {
   group('post', () {
     test('Should call post with correct values ', () async {
       final client = MockClient((request) async {
-        // Aqui você pode implementar o comportamento do seu mock
         return Response('...', 200);
       });
       final sut = HttpAdapter(client);
