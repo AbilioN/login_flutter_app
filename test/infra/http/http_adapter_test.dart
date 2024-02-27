@@ -121,8 +121,18 @@ void main() {
       );
 
       expect(response, {});
+    });
 
-      // verify(client.post(testUrl)).called(matcher)
+    test('Should return empty object if post returns 204', () async {
+      mockResponse(204, body: '');
+
+      final response = await sut.request(
+        url: url,
+        method: 'post',
+        // body: testBody,
+      );
+
+      expect(response, {});
     });
   });
 }
