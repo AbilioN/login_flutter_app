@@ -6,10 +6,10 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const LoginPage();
-    // return Container(
-    //   child: const LoginPage(),
-    // );
-    // throw UnimplementedError();
+    return const MaterialApp(
+      title: 'LoginApp',
+      debugShowCheckedModeBanner: false,
+      home: LoginPage(),
+    );
   }
 }
