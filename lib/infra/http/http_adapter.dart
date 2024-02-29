@@ -8,6 +8,7 @@ class HttpAdapter implements MyHttpClient {
 
   HttpAdapter(this.client);
 
+  @override
   Future<Map<dynamic, dynamic>> request({
     required String url,
     required String method,

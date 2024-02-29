@@ -1,6 +1,5 @@
 import 'package:faker/faker.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
 import 'package:main_app/data/http/http.dart';
 import 'package:main_app/infra/http/http_adapter.dart';
 import 'package:mockito/annotations.dart';
