@@ -1,36 +1,13 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:faker/faker.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:main_app/data/http/http.dart';
+import 'package:main_app/infra/http/http_adapter.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 import 'http_adapter_test.mocks.dart';
-
-class HttpAdapter implements MyHttpClient {
-  final http.Client client;
-
-  HttpAdapter(this.client);
-
-  Future<Map<dynamic, dynamic>> request({
-    required String url,
-    required String method,
-    Map? body,
-  }) async {
-    final headers = {
-      'content-type': 'application/json',
-      'accept': 'application/json',
-    };
-    final uri = Uri.parse(url);
-    final jsonBody = body != null ? jsonEncode(body) : null;
-    final response = await client.post(uri, headers: headers, body: jsonBody);
-    return response.body.isEmpty ? {} : jsonDecode(response.body);
-  }
-}
 
 class ClientSpy extends Mock implements http.Client {}
 
@@ -76,8 +53,6 @@ void main() {
         // body: jsonEncode(testBody),
         body: '{"any_key":"any_value"}',
       )).called(1);
-
-      // verify(client.post(testUrl)).called(matcher)
     });
 
     test('Should call post with correct values without body', () async {
