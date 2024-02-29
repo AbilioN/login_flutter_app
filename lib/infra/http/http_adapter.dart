@@ -20,9 +20,14 @@ class HttpAdapter implements MyHttpClient {
     final uri = Uri.parse(url);
     final jsonBody = body != null ? jsonEncode(body) : null;
     var response = Response('', 500);
-    if (method == 'post') {
-      response = await client.post(uri, headers: headers, body: jsonBody);
-    } else {}
+
+    try {
+      if (method == 'post') {
+        response = await client.post(uri, headers: headers, body: jsonBody);
+      }
+    } catch (erro) {
+      throw HttpError.serverError;
+    }
 
     // return response.body.isEmpty ? {} : jsonDecode(response.body);
     return _handleResponse(response);
